@@ -1,0 +1,17 @@
+SELECT * 
+FROM
+(
+  SELECT year,
+         start_station_name AS station_name,
+         SUM(tripduration) AS total_tripduration,
+         row_number() OVER (PARTITION BY year ORDER BY SUM(tripduration) DESC) AS rank
+  FROM
+      (
+      SELECT CAST(EXTRACT(YEAR FROM starttime) AS STRING) AS year, *
+      FROM `bigquery-public-data.new_york_citibike.citibike_trips` AS trip 
+      WHERE (EXTRACT(YEAR FROM starttime) BETWEEN 2015 AND 2018) 
+      )
+  GROUP BY year, station_name
+  ORDER BY year ASC, total_tripduration DESC
+ )
+WHERE rank <=3
