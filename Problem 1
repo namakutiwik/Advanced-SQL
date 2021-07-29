@@ -1,0 +1,10 @@
+WITH trip AS (SELECT * FROM `bigquery-public-data.new_york_citibike.citibike_trips`) 
+SELECT FORMAT_DATETIME("%Y-%m", DATETIME(starttime)) AS month, 
+       start_station_id,  
+       start_station_name station_name,  
+       ROUND(AVG(tripduration),1) avg_trip_duration 
+FROM trip 
+WHERE EXTRACT(YEAR FROM starttime) BETWEEN 2018 AND 2018
+GROUP BY month, start_station_id, station_name 
+ORDER BY month ASC, avg_trip_duration DESC
+LIMIT 5 
