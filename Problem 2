@@ -1,0 +1,23 @@
+SELECT x.gender,
+       x.start_station_name AS favorite_start_station, 
+       y.end_station_name AS favorite_end_station
+FROM 
+(SELECT gender,
+        start_station_name, 
+        COUNT(start_station_name) AS start_station_count
+        FROM `bigquery-public-data.new_york_citibike.citibike_trips` trip
+WHERE (EXTRACT(YEAR FROM starttime) BETWEEN 2017 AND 2017) AND (gender = 'male')
+GROUP BY gender, start_station_name 
+ORDER BY gender, COUNT(start_station_name) DESC 
+LIMIT 1
+) as x
+INNER JOIN 
+(SELECT gender,
+        end_station_name, 
+        COUNT(end_station_name) AS end_station_count
+        FROM `bigquery-public-data.new_york_citibike.citibike_trips` trip
+WHERE (EXTRACT(YEAR FROM starttime) BETWEEN 2017 AND 2017) AND (gender = 'male')
+GROUP BY gender, end_station_name 
+ORDER BY gender, COUNT(end_station_name) DESC 
+LIMIT 1
+) as y ON x.gender = y.gender
